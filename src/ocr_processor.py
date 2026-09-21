@@ -40,6 +40,10 @@ class HistoricalOCRProcessor:
             logger.exception(f"Error processing image {image_path}: {e}")
             return ""
 
+    def extract_page_text(self, image_path: str, script_mode: str = "latin") -> str:
+        """Alias for single page extraction to maintain test and external compatibility."""
+        return self.extract_page_from_image(image_path, script_mode)
+
     def extract_pdf_campaign(self, pdf_path: str, script_mode: str = "latin") -> Dict[int, str]:
         """
         Ingests a massive legal PDF archive, rendering each page to memory 
@@ -93,7 +97,7 @@ class HistoricalOCRProcessor:
         for path in document_paths:
             if path.lower().endswith(".pdf"):
                 pdf_res = self.extract_pdf_campaign(path, script_mode)
-                results[path] = "\n--- PAGE BREAK ---\n".join(pdf_res.values())
+                results[path] = "\n--- PAGE BREAK ------\n".join(pdf_res.values())
             else:
                 results[path] = self.extract_page_from_image(path, script_mode)
         return results
