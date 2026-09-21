@@ -5,3 +5,5 @@ transformers>=4.30.0
 pytesseract>=0.3.10
 pydantic>=2.0.0
 loguru>=0.7.0
+
+pytest>=7.0.0
