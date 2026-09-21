@@ -32,7 +32,7 @@ R8P3 is not an application, it is a scalable base technology for the open-source
 Clone the repository and set up a local virtual environment:
 
 ```bash
-git clone [https://github.com/FrederikOuvrard/R8P3-Pipeline.git](https://github.com/FrederikOuvrard/R8P3-Pipeline.git)
+git clone https://github.com/FrederikOuvrard/R8P3-Pipeline.git
 cd R8P3-Pipeline
 py -m venv venv
 # On Windows PowerShell:
