@@ -7,7 +7,7 @@ with built-in CPU thermal safeguarding and native PDF campaign ingestion.
 from pathlib import Path
 from typing import List, Dict, Optional
 import time
-import fitz  # PyMuPDF
+import pymupdf as fitz  # PyMuPDF modern import
 from loguru import logger
 import pytesseract
 from PIL import Image
@@ -97,7 +97,7 @@ class HistoricalOCRProcessor:
         for path in document_paths:
             if path.lower().endswith(".pdf"):
                 pdf_res = self.extract_pdf_campaign(path, script_mode)
-                results[path] = "\n--- PAGE BREAK ------\n".join(pdf_res.values())
+                results[path] = "\n--- PAGE BREAK ---\n".join(pdf_res.values())
             else:
                 results[path] = self.extract_page_from_image(path, script_mode)
         return results
