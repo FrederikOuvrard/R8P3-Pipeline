@@ -1,116 +1,22 @@
-# ==========================================
-# ENVIRONNEMENTS ET CACHES PYTHON
-# ==========================================
-venv/
-venvs/
+﻿# Python
 __pycache__/
-*.pyc
-.pytest_cache/
-.uv/
-.mypy_cache/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Indexes locaux & données lourdes
+indexes/
+*.db
+
+# Logs & rapports locaux
+logs/
+reports/
+*.log
+
+# IDE & OS
 .vscode/
-
-# ==========================================
-# BASES DE DONNÉES ET INDEX (STRICTEMENT LOCAL)
-# ==========================================
-*.sqlite3
-*.sqlite3-journal
-*.sqlite3-shm
-*.sqlite3-wal
-corpus.sqlite3
-search.sqlite3
-/indexes/*
-!/indexes/.gitkeep
-
-# ==========================================
-# DOSSIERS D'EXÉCUTION ET TEMPORAIRES
-# (Le contenu est ignoré, mais la structure est conservée via .gitkeep)
-# ==========================================
-/data/*
-!/data/.gitkeep
-!/data/tantivy_index/
-/data/tantivy_index/*
-!/data/tantivy_index/.gitkeep
-!/data/qdrant_storage/
-/data/qdrant_storage/*
-!/data/qdrant_storage/.gitkeep
-
-/logs/*
-!/logs/.gitkeep
-/tmp/*
-!/tmp/.gitkeep
-/temp/*
-!/temp/.gitkeep
-/cache/*
-!/cache/.gitkeep
-/hot/*
-!/hot/.gitkeep
-/work/*
-!/work/.gitkeep
-/staging/*
-!/staging/.gitkeep
-/evidence/*
-!/evidence/.gitkeep
-/recovery/*
-!/recovery/.gitkeep
-/rollback/*
-!/rollback/.gitkeep
-/telemetry/*
-!/telemetry/.gitkeep
-/state/*
-!/state/.gitkeep
-/runtime-state/*
-!/runtime-state/.gitkeep
-
-# ==========================================
-# MODÈLES ET TESSDATA (FICHIERS LOURDS)
-# ==========================================
-/models/*
-!/models/.gitkeep
-/tessdata/*
-!/tessdata/.gitkeep
-*.traineddata
-
-# ==========================================
-# SOURCES ET DOCUMENTS (CONFIDENTIALITÉ)
-# ==========================================
-/downloads/*
-!/downloads/.gitkeep
-/source-materials/*
-!/source-materials/.gitkeep
-*.pdf
-*.jpg
-*.jpeg
-*.png
-*.tiff
-
-# ==========================================
-# RUNTIMES ET INSTALLATEURS
-# ==========================================
-/runtimes/*
-!/runtimes/.gitkeep
-/installers/*
-!/installers/.gitkeep
-/build/*
-!/build/.gitkeep
-/wheelhouse/*
-!/wheelhouse/.gitkeep
-/wheelhouses/*
-!/wheelhouses/.gitkeep
-*.zip
-*.exe
-*.msi
-
-# ==========================================
-# FICHIERS D'AUDIT LOCAUX
-# ==========================================
-architecture_dump.txt
-code_architecture.txt
-TEST_LOCAL_UNIQUEMENT.txt
-
-# ==========================================
-# CONFIGURATION SENSIBLE
-# ==========================================
-.env
-.env.local
-config/secrets.yaml
+.idea/
+.DS_Store
+Thumbs.db
