@@ -4,6 +4,7 @@ Handles multi-script OCR extraction with dynamic Tesseract path resolution.
 """
 
 import os
+import platform
 from pathlib import Path
 from loguru import logger
 import fitz  # PyMuPDF
@@ -13,7 +14,14 @@ import pytesseract
 
 # Forcer le chemin de Tesseract et le dossier tessdata local du projet
 os.environ["TESSDATA_PREFIX"] = str(Path(__file__).resolve().parent.parent)
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\PDF24\tesseract\tesseract.exe"
+
+# Configuration dynamique du chemin Tesseract selon l'OS
+if platform.system() == "Windows":
+    # Chemin local strict de développement
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\PDF24\tesseract\tesseract.exe"
+else:
+    # Environnement CI (Ubuntu)
+    pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 class HistoricalOCRProcessor:
     def __init__(self, supported_scripts: list = None, throttle_delay: float = 0.3):
@@ -77,3 +85,4 @@ class HistoricalOCRProcessor:
             if text:
                 results[fp] = text
         return results
+
