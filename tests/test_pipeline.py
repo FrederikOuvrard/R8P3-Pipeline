@@ -17,13 +17,12 @@ def test_ocr_processor_initialization():
 def test_ocr_invalid_path():
     processor = HistoricalOCRProcessor()
     # A non-existent document path must return an empty string gracefully
-    result = processor.extract_page_text("non_existent_historical_page_999.png", script_mode="latin")
+    result = processor.extract_pdf_campaign("non_existent_historical_page_999.pdf", script_mode="latin")
     assert result == ""
 
-    def test_ocr_script_fallback():
-        processor = HistoricalOCRProcessor(supported_scripts=["latin"])
-        # Test que l'argument est bien pris en compte
-        assert "latin" in processor.supported_scripts
+def test_ocr_script_fallback():
+    processor = HistoricalOCRProcessor(supported_scripts=["latin"])
+    assert "latin" in processor.supported_scripts
 
 def test_hybrid_search_initialization(tmp_path):
     index_dir = tmp_path / "tantivy_index"
@@ -36,4 +35,3 @@ def test_hybrid_search_stubs():
     assert engine.search_exact("fiducie-sûreté") == []
     assert engine.search_semantic([0.1, 0.2, 0.3]) == []
     assert engine.hybrid_fusion_ranking([], []) == []
-
