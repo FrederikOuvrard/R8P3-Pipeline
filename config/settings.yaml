@@ -1,0 +1,19 @@
+﻿project:
+  name: "R8P3-Pipeline"
+  version: "0.1.0-alpha"
+  description: "Scalable OCR and Hybrid RAG Infrastructure for Historical Legal Corpora"
+
+ocr:
+  supported_scripts:
+    - "modern"
+    - "fraktur"
+    - "latin"
+    - "greek_ancient"
+    - "old_french"
+  fallback_engine: "tesseract"
+  batch_throttle_limit: "safe"
+
+search:
+  tantivy_index_path: "./data/tantivy_index"
+  qdrant_collection: "legal_risk_vectors"
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
