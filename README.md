@@ -31,33 +31,32 @@ R8P3 is not an application, it is a scalable base technology for the open-source
 
 Clone the repository and set up a local virtual environment:
 
-\\\ash
-git clone https://github.com/FrederikOuvrard/R8P3-Pipeline.git
+```bash
+git clone [https://github.com/FrederikOuvrard/R8P3-Pipeline.git](https://github.com/FrederikOuvrard/R8P3-Pipeline.git)
 cd R8P3-Pipeline
 py -m venv venv
 # On Windows PowerShell:
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-\\\
+```
 
 ---
 
 ## 💡 Quick Start & Usage
 
 ### 1. Configure Settings
-Review and adjust your pipeline parameters in config/settings.yaml:
-\\\yaml
+Review and adjust your pipeline parameters in `config/settings.yaml`:
+```yaml
 ocr:
   supported_scripts: ["modern", "fraktur", "latin", "greek_ancient", "old_french"]
   fallback_engine: "tesseract"
-\\\
+```
 
 ### 2. Run Campaign Extractor
-\\\ash
+```bash
 python src/run_campaign.py
-\\\
+```
 
 ---
-
 ## 📜 License
-Distributed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE for more information.
+Distributed under the GNU Affero General Public License v3.0 (AGPL-3.0). See `LICENSE` for more information.
