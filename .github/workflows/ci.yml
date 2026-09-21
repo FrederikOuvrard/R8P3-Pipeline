@@ -28,8 +28,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run unit tests with pytest
-      env:
-        PYTHONPATH: "."
+        - name: Run unit tests with pytest
       run: |
-        pytest
+        mkdir -p config
+        touch config/secrets.yaml
+        touch .env
+        pytest tests/ -v
