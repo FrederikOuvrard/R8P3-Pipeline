@@ -1,7 +1,7 @@
-﻿project:
+project:
   name: "R8P3-Pipeline"
-  version: "0.1.0-alpha"
-  description: "Scalable OCR and Hybrid RAG Infrastructure for Historical Legal Corpora"
+  version: "1.0.0"
+  description: "Scalable Multilingual OCR & Hybrid RAG for Historical Computable Law"
 
 ocr:
   supported_scripts:
@@ -10,10 +10,23 @@ ocr:
     - "latin"
     - "greek_ancient"
     - "old_french"
-  fallback_engine: "tesseract"
-  batch_throttle_limit: "safe"
+  default_script: "latin"
+  tessdata_config: "--oem 3 --psm 6"
+  throttle_delay_seconds: 0.3
+  cpu_thermal_safeguard: true
 
 search:
-  tantivy_index_path: "./data/tantivy_index"
-  qdrant_collection: "legal_risk_vectors"
-  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  tantivy:
+    index_path: "./data/tantivy_index"
+    primary_key: "doc_id"
+  qdrant:
+    host: "localhost"
+    port: 6333
+    collection_name: "historical_legal_corpus"
+    vector_size: 768
+  fusion:
+    alpha: 0.5  # Équilibrage entre correspondance lexicale exacte (Tantivy) et sémantique vectorielle (Qdrant)
+
+logging:
+  level: "INFO"
+  format: "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{msg}</level>"
