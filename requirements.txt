@@ -1,4 +1,4 @@
-﻿tantivy>=0.22.0
+tantivy>=0.26.2
 qdrant-client>=1.7.0
 torch>=2.0.0
 transformers>=4.30.0
