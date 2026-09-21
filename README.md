@@ -2,7 +2,7 @@
 
 [![R8P3 CI Pipeline](https://github.com/FrederikOuvrard/R8P3-Pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/FrederikOuvrard/R8P3-Pipeline/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 
 ## 📌 Project Overview
 R8P3 is a foundational open-source pipeline designed to bridge a critical gap in AI safety and legal informatics. It provides the digital infrastructure necessary to transform massive, complex historical legal archives (featuring modern print, Fraktur, Latin, Ancient Greek, and Old French) into computable data.
@@ -52,25 +52,12 @@ ocr:
   fallback_engine: "tesseract"
 \\\
 
-### 2. Run OCR Processor Stub
-\\\python
-from src.ocr_processor import HistoricalOCRProcessor
-
-processor = HistoricalOCRProcessor()
-# Test text extraction pipeline stub
-text = processor.extract_page_text("path/to/historical_page.png", script_mode="fraktur")
-print(text)
-\\\
-
-### 3. Run Hybrid Search Stub
-\\\python
-from src.hybrid_search import HybridSearchEngine
-
-engine = HybridSearchEngine(tantivy_index_path="./data/tantivy_index")
-exact_results = engine.search_exact("fiducie-sûreté")
+### 2. Run Campaign Extractor
+\\\ash
+python src/run_campaign.py
 \\\
 
 ---
 
 ## 📜 License
-Distributed under the Apache-2.0 License. See LICENSE for more information.
+Distributed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE for more information.
