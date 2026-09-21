@@ -1,5 +1,5 @@
-﻿tantivy>=0.22.0
-qdrant-client>=1.7.0
+tantivy>=0.22.0
+qdrant-client>=1.19.1
 torch>=2.0.0
 transformers>=4.30.0
 pytesseract>=0.3.10
