@@ -1,20 +1,11 @@
-﻿[build-system]
-requires = ["setuptools>=61.0.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "r8p3-pipeline"
-version = "1.0.0"
-description = "Moteur de recherche hybride et synthèse RAG pour corpus juridique historique"
-readme = "README.md"
+name = "R8P3-Pipeline"
+version = "0.1.0"
+description = "Pipeline RAG hybride pour corpus juridique"
 requires-python = ">=3.10"
 dependencies = [
-    "tantivy>=0.22.0",
-    "qdrant-client>=1.7.0",
-    "torch>=2.0.0",
-    "transformers>=4.35.0",
-    "streamlit>=1.30.0",
-    "requests>=2.31.0",
-    "loguru>=0.7.0",
-    "pymupdf>=1.23.0"
+    "streamlit",
+    "tantivy",
+    "qdrant-client",
+    "ollama"
 ]
