@@ -1,107 +1,79 @@
 """
-R8P3 OCR Processor Module
-Designed for multi-script historical document extraction (Fraktur, Latin, Old French, Ancient Greek)
-with built-in CPU thermal safeguarding and native PDF campaign ingestion.
+R8P3 Historical OCR Processor
+Handles multi-script OCR extraction with dynamic Tesseract path resolution.
 """
 
+import os
 from pathlib import Path
-from typing import List, Dict, Optional
-import time
-import pymupdf as fitz  # PyMuPDF modern import
 from loguru import logger
-import pytesseract
+import fitz  # PyMuPDF
 from PIL import Image
-import io
+Image.MAX_IMAGE_PIXELS = None
+import pytesseract
+
+# Forcer le chemin de Tesseract et le dossier tessdata local du projet
+os.environ["TESSDATA_PREFIX"] = str(Path(__file__).resolve().parent.parent)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\PDF24\tesseract\tesseract.exe"
 
 class HistoricalOCRProcessor:
-    def __init__(self, supported_scripts: Optional[List[str]] = None, throttle_delay: float = 0.5):
-        self.supported_scripts = supported_scripts or [
-            "modern", "fraktur", "latin", "greek_ancient", "old_french"
-        ]
-        self.throttle_delay = throttle_delay  # Pause de sécurité entre les pages pour protéger le CPU
-        logger.info(f"Initialized R8P3 Historical OCR Processor. Scripts: {self.supported_scripts} | Throttle: {throttle_delay}s")
+    def __init__(self, supported_scripts: list = None, throttle_delay: float = 0.3):
+        self.supported_scripts = supported_scripts or ["latin", "fraktur", "greek", "old_french"]
+        self.throttle_delay = throttle_delay
+        logger.info(f"Initialized HistoricalOCRProcessor | TESSDATA_PREFIX: {os.environ.get('TESSDATA_PREFIX')}")
 
-    def validate_document_path(self, doc_path: str) -> bool:
-        """Validates if the document path exists."""
-        path = Path(doc_path)
+    def extract_pdf_campaign(self, pdf_path: str, script_mode: str = "latin") -> str:
+        full_text = []
+        path = Path(pdf_path)
+        
         if not path.exists():
-            logger.error(f"Target document path not found: {doc_path}")
-            return False
-        return True
-
-    def extract_page_from_image(self, image_path: str, script_mode: str = "latin") -> str:
-        """Extracts text from a single image file."""
-        if not self.validate_document_path(image_path):
-            return ""
-        try:
-            img = Image.open(image_path)
-            return self._run_tesseract(img, script_mode)
-        except Exception as e:
-            logger.exception(f"Error processing image {image_path}: {e}")
+            logger.error(f"PDF file not found: {pdf_path}")
             return ""
 
-    def extract_page_text(self, image_path: str, script_mode: str = "latin") -> str:
-        """Alias for single page extraction to maintain test and external compatibility."""
-        return self.extract_page_from_image(image_path, script_mode)
-
-    def extract_pdf_campaign(self, pdf_path: str, script_mode: str = "latin") -> Dict[int, str]:
-        """
-        Ingests a massive legal PDF archive, rendering each page to memory 
-        and extracting text with built-in thermal throttling pacing.
-        """
-        if not self.validate_document_path(pdf_path):
-            return {}
-
-        results = {}
-        logger.info(f"Opening PDF campaign archive: {pdf_path}")
-
         try:
-            doc = fitz.open(pdf_path)
+            logger.info(f"Opening PDF campaign archive: {path}")
+            doc = fitz.open(str(path))
             total_pages = len(doc)
             logger.info(f"Total pages to process in PDF: {total_pages}")
 
             for page_num in range(total_pages):
-                logger.info(f"Processing PDF page [{page_num + 1}/{total_pages}] (Script: {script_mode})")
-                
-                page = doc.load_page(page_num)
-                pix = page.get_pixmap(dpi=300)  # Haute résolution recommandée pour l'OCR historique
-                img_data = pix.tobytes("png")
-                img = Image.open(io.BytesIO(img_data))
+                page = doc[page_num]
+                pix = page.get_pixmap(dpi=300)
+                img_path = Path(f"temp_page_{page_num}.png")
+                pix.save(str(img_path))
 
-                text = self._run_tesseract(img, script_mode)
-                results[page_num + 1] = text
+                with Image.open(img_path) as img:
+                    text = self._run_tesseract(img, script_mode)
+                    full_text.append(text)
 
-                # Thermal safeguard pacing
-                if self.throttle_delay > 0:
-                    time.sleep(self.throttle_delay)
+                if img_path.exists():
+                    img_path.unlink()
 
             doc.close()
-            logger.info(f"PDF campaign processing completed successfully for {pdf_path}")
-            return results
+            return "\n".join(full_text)
 
         except Exception as e:
             logger.exception(f"Critical error during PDF campaign extraction on {pdf_path}: {e}")
-            return {}
+            return ""
 
     def _run_tesseract(self, img: Image.Image, script_mode: str) -> str:
-        if script_mode not in self.supported_scripts:
-            logger.warning(f"Script mode '{script_mode}' not recognized. Falling back to latin.")
-            script_mode = "latin"
-
+        lang_map = {
+            "latin": "lat+fra",
+            "fraktur": "deu-frak+lat",
+            "greek": "grc+lat",
+            "old_french": "fra+lat"
+        }
+        lang = lang_map.get(script_mode, "lat")
         tessdata_config = "--oem 3 --psm 6"
-        extracted_text = pytesseract.image_to_string(img, config=tessdata_config)
-        return extracted_text.strip()
+        
+        try:
+            return pytesseract.image_to_string(img, lang=lang, config=tessdata_config)
+        except Exception:
+            return pytesseract.image_to_string(img, config=tessdata_config)
 
-    def batch_process_campaign(self, document_paths: List[str], script_mode: str = "latin") -> Dict[str, str]:
+    def batch_process_campaign(self, file_paths: list, script_mode: str = "latin") -> dict:
         results = {}
-        for path in document_paths:
-            if path.lower().endswith(".pdf"):
-                pdf_res = self.extract_pdf_campaign(path, script_mode)
-                results[path] = "\n--- PAGE BREAK ---\n".join(pdf_res.values())
-            else:
-                results[path] = self.extract_page_from_image(path, script_mode)
+        for fp in file_paths:
+            text = self.extract_pdf_campaign(fp, script_mode=script_mode)
+            if text:
+                results[fp] = text
         return results
-
-if __name__ == "__main__":
-    logger.info("Executing OCR module self-test...")
-    processor = HistoricalOCRProcessor()

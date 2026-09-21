@@ -1,6 +1,10 @@
+import os
+import pytesseract
+os.environ["TESSDATA_PREFIX"] = r"D:\R8P3-Pipeline\tessdata"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\PDF24\tesseract\tesseract.exe"
 """
 R8P3 Real Campaign Execution Script
-Ingests a directory of historical legal documents (PDFs/Scans), runs multi-script OCR 
+Ingests a directory of historical legal documents (PDFs/Scans), runs multi-script OCR
 with thermal safeguards, and indexes the resulting corpus into Tantivy and Qdrant.
 """
 
@@ -20,30 +24,23 @@ def load_config(config_path: str = "config/settings.yaml") -> dict:
         return yaml.safe_load(f)
 
 def main():
-    # Configure logging (using {message} instead of {msg})
     logger.remove()
     logger.add(sys.stdout, level="INFO", format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>")
 
     logger.info("=== R8P3 Historical Campaign Runner ===")
 
-    # Load configuration settings
     config = load_config()
     ocr_cfg = config.get("ocr", {})
     search_cfg = config.get("search", {})
 
-    # Define input raw data directory
     raw_data_dir = Path("data/raw")
     raw_data_dir.mkdir(parents=True, exist_ok=True)
 
-    # Search for local PDF or image files in data/raw/
     supported_extensions = (".pdf", ".png", ".jpg", ".jpeg", ".tiff")
     target_files = [str(p) for p in raw_data_dir.iterdir() if p.suffix.lower() in supported_extensions]
 
     if not target_files:
         logger.warning(f"No target PDF or image documents found in '{raw_data_dir.absolute()}' Folder.")
-        logger.info("Tip: Place your historical legal PDF files or scans inside 'data/raw/' to run a live extraction campaign.")
-        
-        # Creating a dummy file reference to demonstrate pipeline flow if empty
         target_files = ["data/raw/sample_historical_archive.pdf"]
         logger.info(f"Using simulated document reference for demonstration: {target_files[0]}")
 
@@ -53,7 +50,7 @@ def main():
         throttle_delay=ocr_cfg.get("throttle_delay_seconds", 0.3)
     )
 
-    # 2. Initialize Hybrid Search Engine (Local Tantivy + Local Qdrant Storage)
+    # 2. Initialize Hybrid Search Engine
     tantivy_path = search_cfg.get("tantivy", {}).get("index_path", "./data/tantivy_index")
     qdrant_col = search_cfg.get("qdrant", {}).get("collection_name", "historical_legal_corpus")
 
@@ -70,14 +67,20 @@ def main():
     # 3. Execute campaign OCR batch extraction
     default_script = ocr_cfg.get("default_script", "latin")
     logger.info(f"Starting batch campaign extraction with script profile: '{default_script}'...")
-    
+
     extraction_results = ocr_processor.batch_process_campaign(target_files, script_mode=default_script)
 
+    # 4. Indexation automatique des résultats dans les moteurs
+    logger.info("Indexing extracted documents into Tantivy and Qdrant...")
     for doc_path, text in extraction_results.items():
+        doc_name = Path(doc_path).name
         char_count = len(text)
-        logger.info(f"Processed document: {doc_path} | Extracted characters: {char_count}")
+        
+        # Indexation textuelle exacte
+        search_engine.index_document(doc_name, text)
+        logger.info(f"Indexed: {doc_name} | Chars: {char_count}")
 
-    logger.info("=== R8P3 Campaign Execution Finished Successfully ===")
+    logger.info("=== R8P3 Campaign Execution & Indexing Finished Successfully ===")
 
 if __name__ == "__main__":
     main()
